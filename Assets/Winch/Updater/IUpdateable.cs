@@ -1,28 +1,21 @@
-﻿using Winch.Update;
-
+﻿
 namespace Winch
 {
     public interface IUpdateable
     {
-        void Update(UpdateInfo updater);
-    }
-
-    public struct UpdateInfo
-    {
-        public int Tick;
-        public float TimeStep;
+        void Update(UpdateInfo updateInfo);
     }
 
     public static class UpdateableExtension
     {
-        public static void BeginUpdate(this IUpdateable updateable)
+        public static void StartUpdate(this IUpdateable updateable, Updater updater)
         {
-            Updater.Instance.Updatables.Add(updateable);
+            updater.Updatables.Add(updateable);
         }
 
-        public static void EndUpdate(this IUpdateable updateable)
+        public static void EndUpdate(this IUpdateable updateable, Updater updater)
         {
-            Updater.Instance.Updatables.Remove(updateable);
+            updater.Updatables.Remove(updateable);
         }
     }
 }

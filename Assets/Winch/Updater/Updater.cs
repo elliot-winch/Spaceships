@@ -1,33 +1,38 @@
 ﻿using UnityEngine;
 
-namespace Winch.Update
+namespace Winch
 {
+    public struct UpdateInfo
+    {
+        public int Time;
+        public float TicksPerUpdate;
+    }
+
     public class Updater : MonoBehaviour
     {
-        public static Updater Instance { get; private set; }
+        [SerializeField]
+        private int m_StartingTimeScale;
 
         public Parameter<int> CurrentTick = new Parameter<int>();
-        public Parameter<float> TimeScale = new Parameter<float>();
+        public Parameter<int> TicksPerUpdate;
+
         public UniqueList<IUpdateable> Updatables = new UniqueList<IUpdateable>();
 
         private void Awake()
         {
-            if(Instance != null)
-            {
-                Debug.LogError("Updater instance already created");
-            }
-
-            Instance = this;
+            TicksPerUpdate = new Parameter<int>(m_StartingTimeScale);
         }
 
         private void FixedUpdate()
         {
-            foreach(IUpdateable updateable in Updatables.Values)
+            CurrentTick.Value += TicksPerUpdate.Value;
+
+            foreach (IUpdateable updateable in Updatables.Values)
             {
                 updateable.Update(new UpdateInfo()
                 {
-                    TimeStep = TimeScale.Value,
-                    Tick = CurrentTick.Value
+                    TicksPerUpdate = TicksPerUpdate.Value,
+                    Time = CurrentTick.Value
                 });
             }
         }

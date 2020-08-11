@@ -34,7 +34,7 @@ public class GameReplayer : IUpdateable
 
     public void Update(UpdateInfo info)
     {
-        while (m_Events.Count > 0 && m_Events.Peek().Tick <= info.Tick)
+        while (m_Events.Count > 0 && m_Events.Peek().Tick <= info.Time)
         {
             Event evt = m_Events.Dequeue();
 

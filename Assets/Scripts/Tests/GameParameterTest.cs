@@ -44,8 +44,8 @@ public class GameParameterTest : MonoBehaviour
 
         replayer.Update(new Winch.UpdateInfo()
         {
-            Tick = 40,
-            TimeStep = 0.1f
+            Time = 40,
+            TicksPerUpdate = 0.1f
         });
     }
 }

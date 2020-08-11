@@ -1,13 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Winch;
-using Winch.Update;
 
-public class MovementTest : MonoBehaviour
+public class PhysicsBodyTest : MonoBehaviour
 {
     [SerializeField]
-    private float m_TimeDelta;
+    private int m_TimeDelta;
     [SerializeField]
     private Vector3 m_Force;
     [SerializeField]
@@ -23,7 +20,7 @@ public class MovementTest : MonoBehaviour
 
     private void Update()
     {
-        Updater.Instance.TimeScale.Value = m_TimeDelta;
+        //Updater.Instance.TicksPerUpdate.Value = m_TimeDelta;
 
         if (Input.GetKeyDown(m_FireKey))
         {
@@ -32,19 +29,19 @@ public class MovementTest : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            m_Round.Force.Value += m_CurrentView.transform.forward * 0.0001f;
+            m_Round.Acceleration.Value += m_CurrentView.transform.forward * 0.0001f;
         }
 
         if (Input.GetKey(KeyCode.S))
         {
-            m_Round.Force.Value -= m_CurrentView.transform.forward * 0.0001f;
+            m_Round.Acceleration.Value -= m_CurrentView.transform.forward * 0.0001f;
         }
     }
 
     public void Fire()
     {
         m_Round = new PhysicsBody();
-        m_Round.BeginUpdate();
+        //m_Round.BeginUpdate();
 
         m_CurrentView = Instantiate(m_VisualObject);
         m_CurrentView.SetActive(true);
