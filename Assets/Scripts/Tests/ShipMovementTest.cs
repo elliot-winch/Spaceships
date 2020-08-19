@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using Winch;
+using Winch.Spaceships;
 
 public class ShipMovementTest : MonoBehaviour
 {
     [SerializeField]
     private Vector3 m_StartingVelocity;
     [SerializeField]
-    private TimeSpacePoint[] m_Points;
+    private SpaceTimePoint[] m_Points;
+    [SerializeField]
+    private float m_ElbowFactor;
 
     [Space(5)]
     [SerializeField]
@@ -16,7 +19,9 @@ public class ShipMovementTest : MonoBehaviour
 
     void Start()
     {
-        ShipMovement ship = new ShipMovement();
+        RoutePlanner planner = new ElbowRoutePlanner(m_ElbowFactor);
+
+        ShipMovement ship = new ShipMovement(planner);
         ship.PhysicsBody.Velocity.Value = m_StartingVelocity;
         ship.StartUpdate(m_Updater);
 

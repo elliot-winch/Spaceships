@@ -1,39 +1,43 @@
 ﻿using System;
-using UnityEngine;
-using Winch;
 
 //TODO: rotation
 
-
-[Serializable]
-public class ShipMovementEvent : Event
+namespace Winch.Spaceships
 {
-    public Path Path { get; private set; }
-    
-    public ShipMovementEvent(int tick, string receiverID, Path path) : base(tick, receiverID)
+    [Serializable]
+    public class ShipMovementEvent : Event
     {
-        Path = path;
-    }
-}
+        public Path Path { get; private set; }
 
-public class ShipMovement : IEventReceiver, IUpdateable
-{
-    public string ID => "Temp";
-
-    public PhysicsBody PhysicsBody = new PhysicsBody();
-
-    private IRoute m_Route;
-
-    public void ReceiveEvent(Event evt)
-    {
-        ShipMovementEvent mvtEvt = evt as ShipMovementEvent;
-
-        m_Route = new SimpleAccelerationRoute(PhysicsBody.Velocity.Value);
-        m_Route.CreateRoute(mvtEvt.Path);
+        public ShipMovementEvent(int tick, string receiverID, Path path) : base(tick, receiverID)
+        {
+            Path = path;
+        }
     }
 
-    public void Update(UpdateInfo updateInfo)
+    public class ShipMovement : IEventReceiver, IUpdateable
     {
-        PhysicsBody.Position.Value = m_Route.SamplePosition(updateInfo.Time);
+        public string ID => "Temp";
+
+        public PhysicsBody PhysicsBody = new PhysicsBody();
+
+        private RoutePlanner m_Route;
+
+        public ShipMovement(RoutePlanner route)
+        {
+            m_Route = route;
+        }
+
+        public void ReceiveEvent(Event evt)
+        {
+            ShipMovementEvent mvtEvt = evt as ShipMovementEvent;
+
+            m_Route.CreateRoute(mvtEvt.Path);
+        }
+
+        public void Update(UpdateInfo updateInfo)
+        {
+            PhysicsBody.SetFromSpaceTimePoint(m_Route.SamplePosition(updateInfo.Time));
+        }
     }
 }

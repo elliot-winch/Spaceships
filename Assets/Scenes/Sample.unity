@@ -190,20 +190,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfa663427da2b2f4392290d84ff9ff1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_StartingVelocity: {x: 1, y: 1, z: -0.2}
+  m_StartingVelocity: {x: 0, y: 0, z: 0}
   m_Points:
   - Time: 0
     Position: {x: 0, y: 0, z: 0}
-    UseVelocity: 0
     Velocity: {x: 0, y: 0, z: 0}
+    Acceleration: {x: 0, y: 0, z: 0}
   - Time: 200
-    Position: {x: 0, y: 0, z: 0}
-    UseVelocity: 0
+    Position: {x: 0, y: 10, z: 0}
+    Velocity: {x: 0, y: 0.1, z: 0}
+    Acceleration: {x: 0, y: 0, z: 0}
+  - Time: 400
+    Position: {x: 0, y: 20, z: 0}
     Velocity: {x: 0, y: 0, z: 0}
-  - Time: 500
-    Position: {x: 10, y: 10, z: 10}
-    UseVelocity: 0
-    Velocity: {x: 0.1, y: 0.2, z: 0.3}
+    Acceleration: {x: 0, y: 0, z: 0}
+  - Time: 600
+    Position: {x: 0, y: 10, z: 0}
+    Velocity: {x: 0, y: -0.1, z: 0}
+    Acceleration: {x: 0, y: 0, z: 0}
+  - Time: 800
+    Position: {x: 0, y: 0, z: 0}
+    Velocity: {x: 0, y: 0, z: 0}
+    Acceleration: {x: 0, y: 0, z: 0}
+  m_ElbowFactor: 0.5
   m_Updater: {fileID: 206578453}
   m_TestVisuals: {fileID: 1693252916}
 --- !u!1 &763950060
