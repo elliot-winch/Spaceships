@@ -20,7 +20,11 @@ public class SimpleAccelerationRoute : IRoute
     private Vector3[] m_Positions;
     private Vector3 m_StartVelocity;
     private Path m_Path;
+
     private AccelerationPlan m_CurrentPlan;
+    private int m_SwitchTime;
+
+    private float N = 0.45f;
 
     public SimpleAccelerationRoute(Vector3 startVelocity)
     {
@@ -39,35 +43,48 @@ public class SimpleAccelerationRoute : IRoute
         m_Positions = new Vector3[path.Time];
 
         PhysicsBody body = new PhysicsBody();
+        body.Position.Value = path.Points[0].Position;
         body.Velocity.Value = m_StartVelocity;
 
         int targetPointIndex = 0;
 
         for(int time = 0; time < path.Time; time++)
         {
-            if(time >= path.Points[targetPointIndex].Time)
+            TimeSpacePoint current = path.Points[targetPointIndex];
+
+            if (time >= current.Time)
             {
-                TimeSpacePoint current = path.Points[targetPointIndex];
                 TimeSpacePoint target = path.Points[targetPointIndex + 1];
+                int timeDelta = target.Time - current.Time;
 
-                //if (target.UseVelocity)
-                //{
-                m_CurrentPlan = ElbowResolve(0.5f, target.Position - current.Position, target.Time - current.Time, body.Velocity.Value, target.Velocity);
-                body.Acceleration.Value = m_CurrentPlan.FirstLeg;    
-                //}
-                /*
-                else
+                //!! Issue: have to round here, might lost accuracy
+                int firstTimeDelta = Mathf.RoundToInt(N * timeDelta);
+                int secondTimeDelta = timeDelta - firstTimeDelta;
+
+                Vector3 vMid = CalculateVMid(N, target.Position - current.Position, timeDelta, body.Velocity.Value, target.Velocity);
+
+                Debug.Log(target.Position - current.Position);
+                Debug.Log(vMid);
+
+                m_CurrentPlan = new AccelerationPlan()
                 {
-                    Vector3 positionDelta = target.Position - current.Position;
-                    float timeDelta = target.Time - current.Time;
-                    body.Acceleration.Value = ResolveForTime(positionDelta, body.Velocity.Value, timeDelta);
-                }
-                */
+                    FirstLeg = (vMid - body.Velocity.Value) / firstTimeDelta,
+                    SecondLeg = (target.Velocity - vMid) / secondTimeDelta
+                };
 
-                Debug.DrawRay(body.Position.Value, body.Acceleration.Value * 100f, Color.red, 100000f);
+                m_SwitchTime = firstTimeDelta + current.Time;
+
+                body.Acceleration.Value = m_CurrentPlan.FirstLeg;    
 
                 targetPointIndex++;
             }
+
+            if(time >= m_SwitchTime)
+            {
+                body.Acceleration.Value = m_CurrentPlan.SecondLeg;
+            }
+
+            Debug.DrawRay(body.Position.Value, body.Acceleration.Value.normalized, Color.red, 100000f);
 
             body.Update(new UpdateInfo()
             {
@@ -75,24 +92,20 @@ public class SimpleAccelerationRoute : IRoute
                 Time = time,
             });
 
-            Debug.Log(body.Velocity.Value.ToString("F5"));
+            Debug.Log(time + " " + body.Velocity.Value.ToString("F5") + " " + body.Position.Value.ToString("F5"));
             m_Positions[time] = body.Position.Value;
         }
     }
 
+    /*
     private Vector3 ResolveForTime(Vector3 positionDelta, Vector3 initialVelocity, float timeDelta)
     {
         return 2 * (positionDelta - initialVelocity * timeDelta) / (timeDelta * timeDelta);
     }
+    */
 
-    private AccelerationPlan ElbowResolve(float n, Vector3 positionDelta, int timeDelta, Vector3 initialVelocity, Vector3 targetVelocity)
+    private Vector3 CalculateVMid(float n, Vector3 positionDelta, int timeDelta, Vector3 initialVelocity, Vector3 targetVelocity)
     {
-        Vector3 vMid = (positionDelta / (2 * timeDelta) + (n - 1) * targetVelocity + n * initialVelocity) / (2 * n - 1);
-
-        return new AccelerationPlan()
-        {
-            FirstLeg = n * timeDelta * (vMid - initialVelocity),
-            SecondLeg = n * timeDelta * (targetVelocity - vMid)
-        };
+        return 2 * positionDelta / timeDelta + (n - 1) * targetVelocity - n * initialVelocity;
     }
 }
