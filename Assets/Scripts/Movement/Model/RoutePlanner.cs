@@ -5,18 +5,19 @@ namespace Winch.Spaceships
     public abstract class RoutePlanner
     {
         private Path m_Path;
-        private SpaceTimePoint[] m_Positions;
+
+        public Parameter<SpaceTimePoint[]> Route { get; private set; } = new Parameter<SpaceTimePoint[]>();
 
         public SpaceTimePoint SamplePosition(int time)
         {
             int index = time - m_Path.StartTime;
-            return index < m_Positions.Length ? m_Positions[index] : m_Positions.Last();
+            return index < Route.Value.Length ? Route.Value[index] : Route.Value.Last();
         }
 
         public void CreateRoute(Path path)
         {
             m_Path = path;
-            m_Positions = Create(path);
+            Route.Value = Create(path);
         }
 
         protected abstract SpaceTimePoint[] Create(Path path);

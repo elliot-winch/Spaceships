@@ -17,6 +17,10 @@ public class ShipMovementTest : MonoBehaviour
     [SerializeField]
     private Transform m_TestVisuals;
 
+    [Space(5)]
+    [SerializeField]
+    private ShipMovementView m_View;
+
     void Start()
     {
         RoutePlanner planner = new ElbowRoutePlanner(m_ElbowFactor);
@@ -36,6 +40,10 @@ public class ShipMovementTest : MonoBehaviour
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.transform.position = p.Position;
         }
+
+        m_View.Model = ship;
+        
+
         //ship.PhysicsBody.Position.Subscribe(pos => Debug.Log(pos.ToString("F4")));
         //ship.PhysicsBody.Velocity.Subscribe(vel => Debug.Log(vel.ToString("F4")));
     }

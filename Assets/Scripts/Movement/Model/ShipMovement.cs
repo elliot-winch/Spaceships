@@ -21,23 +21,23 @@ namespace Winch.Spaceships
 
         public PhysicsBody PhysicsBody = new PhysicsBody();
 
-        private RoutePlanner m_Route;
+        public RoutePlanner RoutePlanner { get; private set; }
 
         public ShipMovement(RoutePlanner route)
         {
-            m_Route = route;
+            RoutePlanner = route;
         }
 
         public void ReceiveEvent(Event evt)
         {
             ShipMovementEvent mvtEvt = evt as ShipMovementEvent;
 
-            m_Route.CreateRoute(mvtEvt.Path);
+            RoutePlanner.CreateRoute(mvtEvt.Path);
         }
 
         public void Update(UpdateInfo updateInfo)
         {
-            PhysicsBody.SetFromSpaceTimePoint(m_Route.SamplePosition(updateInfo.Time));
+            PhysicsBody.SetFromSpaceTimePoint(RoutePlanner.SamplePosition(updateInfo.Time));
         }
     }
 }
